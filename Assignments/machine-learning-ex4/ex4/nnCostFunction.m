@@ -1,4 +1,4 @@
-function [J grad] = nnCostFunction(nn_params, ...
+function [J , grad] = nnCostFunction(nn_params, ...
                                    input_layer_size, ...
                                    hidden_layer_size, ...
                                    num_labels, ...
@@ -24,9 +24,27 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-         
+% The next 2 lines converts the y vector (having values 1,2,3,4) to matrix
+%  of the form 1 = [1 0 0 0]; 2 = [0 1 0 0]; ....
+eye_matrix = eye(num_labels);
+y_matrix = eye_matrix(y,:);
+a1 = [ones(m,1),X];
+a2 = [ones(1,m);sigmoid(Theta1*a1')];
+a3 = [sigmoid(Theta2*a2)]'
+
+st_cost = 0;
+
+
+th1 = Theta1(:,2:end);
+th2 = Theta2(:,2:end);
+s1 = sum(sum(th1.*th1));
+s2 = sum(sum(th2.*th2));
+regCost = (lambda ./ (2*m))*(s1 + s2);
+
+
 % You need to return the following variables correctly 
-J = 0;
+% J = 0;
+J = st_cost + regCost;
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
 
